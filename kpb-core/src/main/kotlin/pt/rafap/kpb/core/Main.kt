@@ -25,6 +25,8 @@ fun main() {
             # Sample Project
 
             This is a sample project generated using KPB.
+            
+            LALALALALA
             """.trimIndent()
         }
 
