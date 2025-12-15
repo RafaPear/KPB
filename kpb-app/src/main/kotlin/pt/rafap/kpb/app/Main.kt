@@ -8,7 +8,7 @@ import pt.rafap.kpb.utils.LOGGER
 import java.lang.System.setProperty
 
 fun main(args: Array<String>) {
-    setProperty("apple.awt.application.name", "Reversi-DEV")
+    setProperty("apple.awt.application.name", "kbp-DEV")
     
     application {
         val windowState = rememberWindowState(
@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
 
         Window(
             onCloseRequest = ::safeExitApplication,
-            title = "Reversi-DEV",
+            title = "kbp-DEV",
             icon = painterResource(Res.drawable.reversi),
             state = windowState,
         ) {
