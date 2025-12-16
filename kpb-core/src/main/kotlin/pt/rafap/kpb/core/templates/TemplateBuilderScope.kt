@@ -5,18 +5,18 @@ import pt.rafap.kpb.core.gradle.GradleFileBuildScope
 import pt.rafap.kpb.core.gradle.VersionCatalog
 import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.module.ModuleBuildScope
-import pt.rafap.kpb.core.project.KbpFile
+import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.project.Project
 
 class TemplateBuilderScope(val rootProject: Project): BuilderScope {
-    private val kbpFiles = mutableListOf<KbpFile>()
+    private val kpbFiles = mutableListOf<KpbFile>()
     private val modules = mutableListOf<Module>()
     private var versionCatalog: VersionCatalog = VersionCatalog()
     private var gradleFiles = mutableListOf<GradleFile>()
     private var handlers = mutableListOf<(Project) -> Project>()
 
     override fun file(path: String, content: () -> String?) {
-        kbpFiles.add(KbpFile(path, content()))
+        kpbFiles.add(KpbFile(path, content()))
     }
 
     override fun gradleFile(gradleFile: GradleFile) {
@@ -58,7 +58,7 @@ class TemplateBuilderScope(val rootProject: Project): BuilderScope {
             versionCatalog = versionCatalog,
             modules = modules,
             gradleFiles = gradleFiles,
-            kbpFiles = kbpFiles,
+            kpbFiles = kpbFiles,
             handlers = handlers
         )
     }

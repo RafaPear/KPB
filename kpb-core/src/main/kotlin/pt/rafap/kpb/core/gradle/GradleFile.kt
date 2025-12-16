@@ -1,6 +1,6 @@
 package pt.rafap.kpb.core.gradle
 
-import pt.rafap.kpb.core.project.KbpFile
+import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.gradle.content.Dependency
 import pt.rafap.kpb.core.gradle.content.Lib
 import pt.rafap.kpb.core.gradle.content.Other
@@ -8,6 +8,12 @@ import pt.rafap.kpb.core.gradle.content.OtherPlugin
 import pt.rafap.kpb.core.gradle.content.Plugin
 import pt.rafap.kpb.core.module.Module
 
+/**
+ * Represents a Gradle build file (e.g., build.gradle.kts or settings.gradle.kts).
+ *
+ * Contains configuration for plugins, dependencies, imports, and other build script elements.
+ * It also holds a reference to the [VersionCatalog] entries required by this file.
+ */
 data class GradleFile(
     val name: String,
     val imports: List<String>,
@@ -23,7 +29,13 @@ data class GradleFile(
         versionCatalog.verifyGradleFile(this)
     }
 
-    fun toKbpFile(): KbpFile {
+    /**
+     * Converts this GradleFile object into a [KpbFile] ready to be written to disk.
+     *
+     * Generates the content string for the Gradle file, including imports, plugins block,
+     * dependencies block, and other custom content.
+     */
+    fun toKbpFile(): KpbFile {
         val content = buildString {
             imports.forEach {
                 appendLine("import $it")
@@ -60,27 +72,37 @@ data class GradleFile(
             }
         }.trimEnd()
 
-        return KbpFile(
+        return KpbFile(
             path = name,
             content = content,
         )
     }
 
+    /**
+     * Merges this GradleFile with another GradleFile.
+     *
+     * Combines lists of imports, plugins, dependencies, etc., and merges the associated
+     * VersionCatalogs.
+     */
     operator fun plus(other: GradleFile): GradleFile {
         return GradleFile(
             name = this.name,
-            imports = this.imports + other.imports,
-            plugins = this.plugins + other.plugins,
-            otherPlugins = this.otherPlugins + other.otherPlugins,
-            dependencies = this.dependencies + other.dependencies,
-            libs = this.libs + other.libs,
+            imports = (this.imports + other.imports).distinct(),
+            plugins = (this.plugins + other.plugins).distinct(),
+            otherPlugins = (this.otherPlugins + other.otherPlugins).distinct(),
+            dependencies = (this.dependencies + other.dependencies).distinct(),
+            libs = (this.libs + other.libs).distinct(),
             modules = this.modules + other.modules,
-            others = this.others + other.others,
+            others = (this.others + other.others).distinct(),
             versionCatalog = this.versionCatalog + other.versionCatalog
         )
     }
 
     companion object {
+        /**
+         * Helper function to build a GradleFile using the [GradleFileBuildScope] DSL.
+         */
+        @Suppress("unused")
         fun buildGradleFile(name: String, func: GradleFileBuildScope.() -> Unit): GradleFile {
             val scope = GradleFileBuildScope(name)
             scope.func()

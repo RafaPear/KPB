@@ -1,20 +1,23 @@
 package pt.rafap.kpb.core.module
 
-import pt.rafap.kpb.core.project.KbpFile
+import pt.rafap.kpb.core.gradle.GradleFile
+import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.gradle.GradleFileBuildScope
 import pt.rafap.kpb.core.gradle.VersionCatalog
 
-class ModuleBuildScope(val name: String, val group: String?): BuilderScope {
-    private val files = mutableListOf<KbpFile>()
+class ModuleBuildScope(val name: String, val groupPath: String?): BuilderScope {
+    private val files = mutableListOf<KpbFile>()
     private var versionCatalog: VersionCatalog = VersionCatalog()
+    private var gradleFiles = mutableListOf<GradleFile>()
 
     override fun file(path: String, content: () -> String?) {
-        files.add(KbpFile(path, content()))
+        files.add(KpbFile(path, content()))
     }
 
     private fun buildSrcPath(srcName: String, path: String): String {
-        return if (group == null) "src/$srcName/$path"
-        else "src/$srcName/kotlin/${group}/$path"
+        val str = if (groupPath == null) "src/$srcName/$path"
+        else "src/$srcName/kotlin/${groupPath}/$path"
+        return str
     }
 
     override fun srcMainFile(path: String, content: () -> String?) {
@@ -42,13 +45,11 @@ class ModuleBuildScope(val name: String, val group: String?): BuilderScope {
         scope.func()
         val buildFileContent = scope.build()
         versionCatalog += buildFileContent.versionCatalog
-        file(buildFileContent.name) {
-            buildFileContent.toKbpFile().content
-        }
+        gradleFiles.add(buildFileContent)
     }
 
     fun build(): Module {
         buildGradle {}
-        return Module(name, files, versionCatalog)
+        return Module(name, files, gradleFiles, versionCatalog)
     }
 }

@@ -2,16 +2,16 @@ package pt.rafap.kpb.core.templates
 
 import pt.rafap.kpb.core.gradle.GradleFile
 import pt.rafap.kpb.core.gradle.VersionCatalog
+import pt.rafap.kpb.core.mergeGradleFiles
 import pt.rafap.kpb.core.module.Module
-import pt.rafap.kpb.core.project.KbpFile
+import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.project.Project
-import pt.rafap.kpb.core.project.ProjectBuilderScope
 
 data class Template(
     val versionCatalog: VersionCatalog,
     val modules: List<Module>,
     val gradleFiles: List<GradleFile>,
-    val kbpFiles: List<KbpFile>,
+    val kpbFiles: List<KpbFile>,
     val handlers: List<(Project) -> Project>,
 ) {
 
@@ -19,8 +19,8 @@ data class Template(
         return Template(
             versionCatalog = this.versionCatalog + other.versionCatalog,
             modules = this.modules + other.modules,
-            gradleFiles = gradleFiles + other.gradleFiles,
-            kbpFiles = this.kbpFiles + other.kbpFiles,
+            gradleFiles = gradleFiles.mergeGradleFiles(other.gradleFiles),
+            kpbFiles = this.kpbFiles + other.kpbFiles,
             handlers = this.handlers + other.handlers,
         )
     }
@@ -32,13 +32,5 @@ data class Template(
             templateScope.scope(project)
             return templateScope.build()
         }
-
-        val EmptyTemplate = Template(
-            versionCatalog = VersionCatalog(),
-            modules = emptyList(),
-            gradleFiles = emptyList(),
-            kbpFiles = emptyList(),
-            handlers = emptyList()
-        )
     }
 }

@@ -3,10 +3,14 @@ package pt.rafap.kpb.core.gradle
 import pt.rafap.kpb.core.gradle.content.Lib
 import pt.rafap.kpb.core.gradle.content.Plugin
 import pt.rafap.kpb.core.gradle.content.Version
-import pt.rafap.kpb.core.module.Module
-import pt.rafap.kpb.core.module.ModuleBuildScope
-import pt.rafap.kpb.core.project.KbpFile
+import pt.rafap.kpb.core.project.KpbFile
 
+/**
+ * Represents a Gradle Version Catalog (libs.versions.toml).
+ *
+ * Holds collections of libraries, versions, and plugins to be defined in the catalog.
+ * Ensures integrity by checking for duplicates.
+ */
 data class VersionCatalog(
     val libs: List<Lib> = listOf(),
     val versions: List<Version> = listOf(),
@@ -16,6 +20,10 @@ data class VersionCatalog(
         verifyIntegrity()
     }
 
+    /**
+     * Verifies that there are no duplicate IDs or names in the catalog entries.
+     * Throws IllegalArgumentException if duplicates are found.
+     */
     fun verifyIntegrity() {
         require(plugins.map { it.id }.toSet().size == plugins.size) {
             "Duplicate plugin IDs found in VersionCatalog: " +
@@ -37,6 +45,9 @@ data class VersionCatalog(
         }
     }
 
+    /**
+     * Verifies that a given [GradleFile] only uses plugins and libraries defined in this catalog.
+     */
     fun verifyGradleFile(gradleFile: GradleFile) {
         val plugins = gradleFile.plugins
         val libs = gradleFile.libs
@@ -49,7 +60,10 @@ data class VersionCatalog(
         }
     }
 
-    fun toKbpFile(): KbpFile {
+    /**
+     * Generates the `libs.versions.toml` file content from this catalog.
+     */
+    fun toKbpFile(): KpbFile {
         val sb = StringBuilder()
         sb.appendLine("[versions]")
         versions.forEach { version ->
@@ -65,21 +79,19 @@ data class VersionCatalog(
         plugins.forEach { plugin ->
             sb.appendLine("${plugin.name} = { id = \"${plugin.id}\", version.ref = \"${plugin.versionRef}\" }")
         }
-        return KbpFile(
+        return KpbFile(
             path = "gradle/libs.versions.toml",
             content = sb.toString()
         )
     }
 
+    /**
+     * Merges this catalog with another, combining entries and removing duplicates.
+     */
     operator fun plus(other: VersionCatalog): VersionCatalog {
         val libs = (this.libs + other.libs).distinct()
         val versions = (this.versions + other.versions).distinct()
         val plugins = (this.plugins + other.plugins).distinct()
-
-        println("Merging VersionCatalogs:")
-        println(" - Libs: $libs")
-        println(" - Versions: $versions")
-        println(" - Plugins: $plugins")
 
         return VersionCatalog(
             libs = libs,
@@ -88,6 +100,9 @@ data class VersionCatalog(
         )
     }
 
+    /**
+     * Removes entries present in the other catalog from this one.
+     */
     operator fun minus(other: VersionCatalog): VersionCatalog {
         return VersionCatalog(
             libs = this.libs.filterNot { lib -> other.libs.any { it.name == lib.name } },

@@ -6,6 +6,12 @@ import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.module.ModuleBuildScope
 import pt.rafap.kpb.core.templates.Template
 
+/**
+ * DSL scope interface for building a project.
+ *
+ * Defines the available operations for configuring a project, such as adding files,
+ * setting the group ID, adding Gradle files, modules, and applying templates.
+ */
 interface BuilderScope {
     fun file(path: String, content: () -> String? = { null })
     fun group(group: String)

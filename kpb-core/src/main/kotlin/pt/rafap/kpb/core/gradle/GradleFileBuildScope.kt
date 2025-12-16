@@ -4,6 +4,11 @@ import pt.rafap.kpb.core.gradle.content.*
 import pt.rafap.kpb.core.module.Module
 
 
+/**
+ * DSL scope for building a [GradleFile].
+ *
+ * Allows adding libraries, plugins, dependencies, and arbitrary content blocks to a Gradle file.
+ */
 class GradleFileBuildScope(val name: String): BuilderScope {
     private val imports = mutableListOf<String>()
     private val plugins = mutableListOf<Plugin>()
@@ -14,34 +19,55 @@ class GradleFileBuildScope(val name: String): BuilderScope {
     private val versions = mutableListOf<Version>()
     private val others = mutableListOf<Other>()
 
+    /**
+     * Adds a library dependency to the Gradle file and registers it in the version catalog.
+     */
     override fun library(name: String, id: String, version: () -> Version) {
         val ver = version()
         versions.add(ver)
         libraries.add(Lib(name, ver.name, id))
     }
 
+    /**
+     * Adds a module dependency to the Gradle file.
+     */
     override fun module(module: () -> Module) {
         modules.add(module())
     }
 
+    /**
+     * Adds a plugin to the Gradle file and registers it in the version catalog.
+     */
     override fun plugin(name: String, id: String, apply: Boolean, version: () -> Version) {
         val ver = version()
         versions.add(ver)
-        plugins.add(Plugin(name, id, ver.name))
+        plugins.add(Plugin(name, id, ver.name, apply))
     }
 
+    /**
+     * Adds a plugin configuration string directly (e.g. for plugins not in the catalog).
+     */
     override fun otherPlugin(definition: String, apply: Boolean) {
         otherPlugins.add(OtherPlugin(definition, apply))
     }
 
+    /**
+     * Adds a raw dependency string to the dependencies block.
+     */
     override fun dependency(dependency: () -> Dependency) {
         dependencies.add(dependency())
     }
 
+    /**
+     * Adds arbitrary content to the Gradle file (e.g. task configuration).
+     */
     override fun other(content: () -> String) {
         others.add(Other(content()))
     }
 
+    /**
+     * Adds an import statement to the Gradle file.
+     */
     override fun import(path: String) {
         imports.add(path)
     }

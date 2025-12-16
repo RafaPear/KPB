@@ -7,18 +7,31 @@ import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.module.ModuleBuildScope
 import pt.rafap.kpb.core.templates.Template
 
+/**
+ * DSL scope for building a [Project].
+ *
+ * Allows configuring project properties like group ID, adding modules, files,
+ * Gradle files, and applying templates.
+ */
 class ProjectBuilderScope(val name: String): BuilderScope {
-    private val kbpFiles = mutableListOf<KbpFile>()
+    private val kpbFiles = mutableListOf<KpbFile>()
     private var group: String? = null
     private val modules = mutableListOf<Module>()
     private var versionCatalog: VersionCatalog = VersionCatalog()
     private var gradleFiles = mutableListOf<GradleFile>()
     private var templates = mutableListOf<Template>()
 
+    /**
+     * Adds a file to the project root.
+     */
     override fun file(path: String, content: () -> String?) {
-        kbpFiles.add(KbpFile("$name/$path", content()))
+        kpbFiles.add(KpbFile(path, content()))
     }
 
+    /**
+     * Sets the project group ID.
+     * Validates that the group ID format is correct (no spaces, valid dots, etc.).
+     */
     override fun group(group: String) {
         if (group.isBlank()) this.group = null
         assert(!group.contains(" ")) { "Group cannot contain spaces." }
@@ -26,14 +39,20 @@ class ProjectBuilderScope(val name: String): BuilderScope {
         assert(!group.startsWith(".")) { "Group cannot start with a dot." }
         assert(!group.contains("..")) { "Group cannot contain consecutive dots." }
         assert(!group.contains("/")) { "Group cannot contain slashes." }
-        this.group = group.replace(".", "/")
+        this.group = group
     }
 
+    /**
+     * Adds a pre-built [GradleFile] to the project.
+     */
     override fun gradleFile(gradleFile: GradleFile) {
         versionCatalog += gradleFile.versionCatalog
         gradleFiles.add(gradleFile)
     }
 
+    /**
+     * Configures and adds a [GradleFile] using the DSL.
+     */
     override fun gradleFile(
         name: String,
         gradleFile: GradleFileBuildScope.() -> Unit
@@ -44,21 +63,33 @@ class ProjectBuilderScope(val name: String): BuilderScope {
         gradleFile(gradleFile)
     }
 
+    /**
+     * Adds a pre-built [Module] to the project.
+     */
     override fun module(module: Module) {
         versionCatalog += module.versionCatalog
         modules.add(module)
     }
 
+    /**
+     * Configures and adds a [Module] using the DSL.
+     */
     override fun module(
         name: String,
         module: ModuleBuildScope.() -> Unit
     ) {
-        val moduleScope = ModuleBuildScope(name, group)
-        moduleScope.module()
-        val module = moduleScope.build()
+        val newGroup = group?.replace(".", "/")
+        val scope = ModuleBuildScope(name, newGroup)
+        scope.module()
+        val module = scope.build()
         module(module)
     }
 
+    /**
+     * Applies a template to the project.
+     * The template function receives the current project state (without parsing) to allow
+     * conditional logic based on project configuration.
+     */
     override fun template(template: (Project) -> Template) {
         println("Applying template to project $name")
         templates.add(template(buildNoParse()))
@@ -70,7 +101,7 @@ class ProjectBuilderScope(val name: String): BuilderScope {
             group = group,
             versionCatalog = versionCatalog,
             modules = modules,
-            kbpFiles = kbpFiles,
+            kpbFiles = kpbFiles,
             gradleFiles = gradleFiles,
             templates = templates
         )
