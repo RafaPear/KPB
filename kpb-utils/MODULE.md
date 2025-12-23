@@ -1,7 +1,14 @@
-Module kbp-utils
+# Module kpb-utils
 
-todo
+Utilities for configuration, environment, formatting, and optional audio helpers used across KPB.
 
-#Package pt.rafap.kpb.utils
+## Packages
+- `pt.rafap.kpb.utils`: Config, ConfigLoader, Environment, formatters.
 
-todo
+## Usage
+Load configuration with defaults:
+
+```kotlin
+val cfg = ConfigLoader("app.properties") { AppConfig(it) }.loadConfig()
+println(cfg.DB_URL)
+```

@@ -1,9 +1,14 @@
-Module kbp-app
+# Module kpb-app
 
-TODO
+App entry point that wires the core components for an interactive experience.
 
-#Package pt.rafap.kpb.app
+## Packages
+- `pt.rafap.kpb.app`: Application entry and wiring.
 
-## Overview
+## Usage
+Build and run:
 
-TODO
+```sh
+./gradlew :kpb-app:build
+java -jar kpb-app/build/libs/kpb-app-1.0.1.jar
+```
