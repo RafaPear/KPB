@@ -94,7 +94,7 @@
   <div class="breadcrumbs"><a href="../index.html">kpb-storage</a><span class="delimiter">/</span><span class="current">pt.rafap.kpb.storage</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
-    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kpb-storage/main"><p class="paragraph">todo</p></div></div>
+    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kpb-storage/main"><p class="paragraph">Storage interfaces and file-based implementations.</p><h2 class="">Usage</h2><p class="paragraph">Async file storage for a domain type:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">data class User(val id: Int, val name: String)<br>class UserSerializer : Serializer&lt;User, String&gt; {<br>    override fun serialize(obj: User) = "${obj.id},${obj.name}"<br>    override fun deserialize(obj: String) = obj.split(",").let { User(it[0].toInt(), it[1]) }<br>}<br>val storage = AsyncFileStorage("users", UserSerializer())<br>// use within coroutines</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button></div>

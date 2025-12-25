@@ -87,7 +87,256 @@
   <div class="cover ">
     <div class="cover ">
       <h1 class="">Kotlin Project Builder (KPB)</h1>
-      <p class="paragraph">Kotlin Project Builder (KPB) is a tool designed to streamline the process of building Kotlin projects. This is a solution for developers who want to automate and simplify the build process of their Kotlin applications.</p>
+      <p class="paragraph">Kotlin Project Builder (KPB) is a multi-module toolkit to scaffold and build Kotlin projects quickly and consistently. It provides a small DSL and utilities to compose modules, Gradle files, version catalogs, and arbitrary files, then materialize them on disk. It includes a CLI and an app entry for interactive use.</p>
+      <ul>
+        <li>
+          <p class="paragraph">Core concepts: Project, Module, GradleFile, VersionCatalog, Templates.</p>
+        </li>
+        <li>
+          <p class="paragraph">Modules: <code class="lang-kotlin">kpb-core</code>, <code class="lang-kotlin">kpb-utils</code>, <code class="lang-kotlin">kpb-storage</code>, <code class="lang-kotlin">kpb-cli</code>, <code class="lang-kotlin">kpb-app</code>.</p>
+        </li>
+      </ul>
+      <h2 class="">Features</h2>
+      <ul>
+        <li>
+          <p class="paragraph">Compose a project from reusable templates and modules.</p>
+        </li>
+        <li>
+          <p class="paragraph">Merge Gradle files and version catalogs safely.</p>
+        </li>
+        <li>
+          <p class="paragraph">Storage abstractions for saving/loading domain state.</p>
+        </li>
+        <li>
+          <p class="paragraph">CLI for quick interactions; app entry for richer UX.</p>
+        </li>
+      </ul>
+      <h2 class="">Requirements</h2>
+      <ul>
+        <li>
+          <p class="paragraph">JDK 21+</p>
+        </li>
+        <li>
+          <p class="paragraph">Gradle (the wrapper is included)</p>
+        </li>
+      </ul>
+      <h2 class="">Installation</h2>
+      <p class="paragraph">You can build the project and use the generated JARs under <code class="lang-kotlin">build/libs</code> and per-module <code class="lang-kotlin">build/libs</code>.</p>
+      <div class="sample-container">
+        <pre><code class="block lang-sh" theme="idea">./gradlew clean build</code></pre>
+<span class="copy-tooltip">
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+<span class="copy-icon"></span></span></div>
+      <p class="paragraph">Alternatively, run specific modules:</p>
+      <div class="sample-container">
+        <pre><code class="block lang-sh" theme="idea">./gradlew :kpb-cli:build<br>./gradlew :kpb-app:build</code></pre>
+<span class="copy-tooltip">
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+<span class="copy-icon"></span></span></div>
+      <h2 class="">Quick Start</h2>
+      <h3 class="">Run the CLI</h3>
+      <p class="paragraph">After building, run the CLI JAR:</p>
+      <div class="sample-container">
+        <pre><code class="block lang-sh" theme="idea">java -jar kpb-cli/build/libs/kpb-cli-1.0.1.jar</code></pre>
+<span class="copy-tooltip">
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+<span class="copy-icon"></span></span></div>
+      <ul>
+        <li>
+          <p class="paragraph">Uses KtFlag for argument parsing.</p>
+        </li>
+        <li>
+          <p class="paragraph">Type <code class="lang-kotlin">help</code> inside the CLI to list commands.</p>
+        </li>
+      </ul>
+      <h3 class="">Run the App</h3>
+      <p class="paragraph">After building, run the app JAR:</p>
+      <div class="sample-container">
+        <pre><code class="block lang-sh" theme="idea">java -jar kpb-app/build/libs/kpb-app-1.0.1.jar</code></pre>
+<span class="copy-tooltip">
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+<span class="copy-icon"></span></span></div>
+      <h2 class="">Modules Overview</h2>
+      <ul>
+        <li>
+          <p class="paragraph">kpb-core: Core domain (Project, Module, GradleFile, VersionCatalog, Templates) and DSL to compose projects.</p>
+        </li>
+        <li>
+          <p class="paragraph">kpb-utils: Utilities (configuration loader, environment helpers, formatting, audio helpers).</p>
+        </li>
+        <li>
+          <p class="paragraph">kpb-storage: Sync and async storage abstractions and file-based implementations.</p>
+        </li>
+        <li>
+          <p class="paragraph">kpb-cli: Command-line interface entry points and commands.</p>
+        </li>
+        <li>
+          <p class="paragraph">kpb-app: App entry point that wires the core.</p>
+        </li>
+      </ul>
+      <h2 class="">Developing</h2>
+      <ul>
+        <li>
+          <p class="paragraph">Use the Gradle wrapper for all tasks.</p>
+        </li>
+        <li>
+          <p class="paragraph">Follow KDoc standards (see below) for public APIs.</p>
+        </li>
+      </ul>
+      <p class="paragraph">Common tasks:</p>
+      <div class="sample-container">
+        <pre><code class="block lang-sh" theme="idea">./gradlew build<br>./gradlew test</code></pre>
+<span class="copy-tooltip">
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+<span class="copy-icon"></span></span></div>
+      <h2 class="">Documentation (Dokka)</h2>
+      <p class="paragraph">Generate API docs:</p>
+      <div class="sample-container">
+        <pre><code class="block lang-sh" theme="idea">./gradlew dokkaHtml</code></pre>
+<span class="copy-tooltip">
+          <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
+<span class="copy-icon"></span></span></div>
+      <ul>
+        <li>
+          <p class="paragraph">Output is under <code class="lang-kotlin">build/dokka/html/index.html</code> and per-module <code class="lang-kotlin">build/dokka-module/html</code>.</p>
+        </li>
+        <li>
+          <p class="paragraph">Module overviews come from each module's <code class="lang-kotlin">MODULE.md</code>.</p>
+        </li>
+      </ul>
+      <h2 class="">KDoc Standards</h2>
+      <ul>
+        <li>
+          <p class="paragraph">Provide a concise summary on classes and functions.</p>
+        </li>
+        <li>
+          <p class="paragraph">Document non-trivial parameters (<code class="lang-kotlin">@param</code>) and return values (<code class="lang-kotlin">@return</code>).</p>
+        </li>
+        <li>
+          <p class="paragraph">Use <code class="lang-kotlin">@throws</code> for expected exceptions and IO semantics.</p>
+        </li>
+        <li>
+          <p class="paragraph">Data classes: use <code class="lang-kotlin">@property</code> for key fields.</p>
+        </li>
+        <li>
+          <p class="paragraph">Include a small usage example when helpful.</p>
+        </li>
+      </ul>
+      <h2 class="">Release & Versioning</h2>
+      <ul>
+        <li>
+          <p class="paragraph">JARs are versioned via Gradle and placed under <code class="lang-kotlin">build/libs</code> and per-module <code class="lang-kotlin">build/libs</code>.</p>
+        </li>
+        <li>
+          <p class="paragraph">Update <code class="lang-kotlin">gradle.properties</code> or module <code class="lang-kotlin">build.gradle.kts</code> to bump versions.</p>
+        </li>
+      </ul>
+      <h2 class="">Contributing</h2>
+      <ul>
+        <li>
+          <p class="paragraph">Open PRs with tests and KDoc.</p>
+        </li>
+        <li>
+          <p class="paragraph">Run Dokka and ensure there are no blocking warnings before merging.</p>
+        </li>
+      </ul>
+      <h2 class="">Links</h2>
+      <ul>
+        <li>
+          <p class="paragraph">Local docs: <code class="lang-kotlin">build/dokka/html/index.html</code> after running Dokka.</p>
+        </li>
+        <li>
+          <p class="paragraph">Module docs: <code class="lang-kotlin">kpb-*/build/dokka-module/html/index.html</code>.</p>
+        </li>
+      </ul>
+      <h2 class="">Roadmap & Current Status</h2>
+      <p class="paragraph">KPB is under active development. Here’s what’s working today and what’s next:</p>
+      <ul>
+        <li>
+          <p class="paragraph">Current state</p>
+        </li>
+        <ul>
+          <li>
+            <p class="paragraph">Core: Functional and tested. You can compose Projects, merge Gradle files and version catalogs, and materialize to disk.</p>
+          </li>
+          <li>
+            <p class="paragraph">CLI: Starts, but commands are minimal/stubbed. No user-facing features implemented yet.</p>
+          </li>
+          <li>
+            <p class="paragraph">App: Starts, but no features implemented yet.</p>
+          </li>
+          <li>
+            <p class="paragraph">Storage/Utils: Core interfaces and basic file-backed implementations/utilities are available and tested.</p>
+          </li>
+        </ul>
+        <li>
+          <p class="paragraph">Near-term milestones</p>
+        </li>
+        <ol>
+          <li>
+            <p class="paragraph">CLI MVP</p>
+          </li>
+          <ul>
+            <li>
+              <p class="paragraph">Project scaffold command (generate from template)</p>
+            </li>
+            <li>
+              <p class="paragraph">Config management (read/update settings)</p>
+            </li>
+            <li>
+              <p class="paragraph">Help and command discovery</p>
+            </li>
+          </ul>
+          <li>
+            <p class="paragraph">App MVP</p>
+          </li>
+          <ul>
+            <li>
+              <p class="paragraph">Interactive wizard to create a new project</p>
+            </li>
+            <li>
+              <p class="paragraph">Preview virtual structure before writing to disk</p>
+            </li>
+          </ul>
+          <li>
+            <p class="paragraph">Templates & DSL enhancements</p>
+          </li>
+          <ul>
+            <li>
+              <p class="paragraph">Built-in templates for common Kotlin/JVM patterns</p>
+            </li>
+            <li>
+              <p class="paragraph">Higher-level helpers for Gradle configuration</p>
+            </li>
+          </ul>
+          <li>
+            <p class="paragraph">Docs & Examples</p>
+          </li>
+          <ul>
+            <li>
+              <p class="paragraph">End-to-end examples in docs (core + CLI)</p>
+            </li>
+            <li>
+              <p class="paragraph">Publish API docs (Dokka)</p>
+            </li>
+          </ul>
+        </ol>
+        <li>
+          <p class="paragraph">Priorities</p>
+        </li>
+        <ul>
+          <li>
+            <p class="paragraph">Stabilize public API in <code class="lang-kotlin">kpb-core</code></p>
+          </li>
+          <li>
+            <p class="paragraph">Ship CLI scaffold flow</p>
+          </li>
+          <li>
+            <p class="paragraph">Keep KDoc coverage high and CI checks green</p>
+          </li>
+        </ul>
+      </ul>
+      <p class="paragraph">If you’re interested in contributing, focus on CLI commands and app flows first—those unlock most user value.</p>
     </div>
     <h2 class="">All modules:</h2>
     <div class="table"><a data-name="1384415932%2FMain%2F0" anchor-label="kpb-app" id="1384415932%2FMain%2F0" data-filterable-set=""></a>
@@ -98,7 +347,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1384415932%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">App entry point that wires the core components for an interactive experience.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="1106315421%2FMain%2F0" anchor-label="kpb-cli" id="1106315421%2FMain%2F0" data-filterable-set=""></a>
@@ -109,7 +360,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1106315421%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">Command-line interface for KPB using KtFlag for argument parsing.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="-1278973594%2FMain%2F0" anchor-label="kpb-core" id="-1278973594%2FMain%2F0" data-filterable-set=""></a>
@@ -120,7 +373,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1278973594%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">Core domain for KPB: project composition DSL and types to represent modules, Gradle files, version catalogs, and templates.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="1051938210%2FMain%2F0" anchor-label="kpb-storage" id="1051938210%2FMain%2F0" data-filterable-set=""></a>
@@ -131,7 +386,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1051938210%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">Storage abstractions for synchronous and asynchronous operations with file-backed implementations.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="-1266369748%2FMain%2F0" anchor-label="kpb-utils" id="-1266369748%2FMain%2F0" data-filterable-set=""></a>
@@ -142,7 +399,9 @@
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1266369748%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div><span class="brief-comment"></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">Utilities for configuration, environment, formatting, and optional audio helpers used across KPB.</p>
+            </span></div>
         </div>
       </div>
     </div>
