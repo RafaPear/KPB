@@ -1,9 +1,9 @@
-# Module kpb-storage
+#Module kpb-storage
 
 Storage abstractions for synchronous and asynchronous operations with file-backed implementations.
 
-## Packages
-- `pt.rafap.kpb.storage`: Storage interfaces and file-based implementations.
+#Package pt.rafap.kpb.storage
+Storage interfaces and file-based implementations.
 
 ## Usage
 Async file storage for a domain type:

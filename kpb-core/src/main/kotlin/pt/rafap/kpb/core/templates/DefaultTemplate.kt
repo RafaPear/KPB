@@ -4,6 +4,16 @@ import pt.rafap.kpb.core.gradle.content.Version
 import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
+/**
+ * Creates a default Kotlin/JVM project template.
+ *
+ * Generates a basic project structure with settings.gradle.kts, build.gradle.kts,
+ * gradle wrapper, and version catalog configuration.
+ *
+ * @param version The project version (must follow semantic versioning: MAJOR[.MINOR][.PATCH]).
+ * @return A Template configured with default Kotlin project settings.
+ * @throws IllegalArgumentException if the version string is not in the correct format.
+ */
 fun Project.createDefaultTemplate(version: String): Template = this.buildTemplate { project ->
     val isVersionValid =
         Regex("^[1-9]\\d*(?:\\.(0|[1-9]\\d*))?(?:\\.(0|[1-9]\\d*))?$")

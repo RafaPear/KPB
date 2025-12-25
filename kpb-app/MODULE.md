@@ -1,9 +1,9 @@
-# Module kpb-app
+#Module kpb-app
 
 App entry point that wires the core components for an interactive experience.
 
-## Packages
-- `pt.rafap.kpb.app`: Application entry and wiring.
+#Package pt.rafap.kpb.app
+Application entry and wiring.
 
 ## Usage
 Build and run:

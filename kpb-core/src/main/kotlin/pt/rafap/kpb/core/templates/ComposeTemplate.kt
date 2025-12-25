@@ -8,6 +8,16 @@ import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
+/**
+ * Creates a template for Compose Desktop application modules.
+ *
+ * Configures modules with Jetpack Compose Multiplatform for desktop development.
+ * Includes Compose compiler, runtime dependencies, and desktop-specific configuration.
+ * Combines with the app template to provide executable JAR support.
+ *
+ * @param modules The list of modules to configure as Compose Desktop applications.
+ * @return A Template configured for Compose Desktop with all necessary dependencies and plugins.
+ */
 fun Project.createComposeTemplate(modules: List<Module>): Template {
     var template = this.buildTemplate {
         modules.map { module ->

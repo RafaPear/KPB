@@ -37,6 +37,15 @@ data class Module(
     }
 
     companion object {
+        /**
+         * Helper function to build a [Module] using the [ModuleBuildScope] DSL.
+         *
+         * @param name The full module name.
+         * @param simpleName The simple name of the module.
+         * @param group The base group identifier (optional).
+         * @param func The configuration block.
+         * @return The built [Module] instance.
+         */
         fun buildModule(name: String, simpleName: String, group: String? = null, func: ModuleBuildScope.() -> Unit): Module {
             val newGroup = if (group == null) simpleName else "$group.$simpleName"
             val scope = ModuleBuildScope(name, simpleName, newGroup)

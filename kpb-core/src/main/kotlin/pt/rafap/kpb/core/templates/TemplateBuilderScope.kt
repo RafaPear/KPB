@@ -8,6 +8,14 @@ import pt.rafap.kpb.core.module.ModuleBuildScope
 import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.project.Project
 
+/**
+ * DSL scope for building a template.
+ *
+ * Provides functions to define template content including files, modules, Gradle files,
+ * and transformation handlers.
+ *
+ * @property rootProject The project that this template is being built for.
+ */
 class TemplateBuilderScope(val rootProject: Project): BuilderScope {
     private val kpbFiles = mutableListOf<KpbFile>()
     private val modules = mutableListOf<Module>()

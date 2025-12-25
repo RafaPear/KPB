@@ -1,9 +1,9 @@
-# Module kpb-utils
+#Module kpb-utils
 
 Utilities for configuration, environment, formatting, and optional audio helpers used across KPB.
 
-## Packages
-- `pt.rafap.kpb.utils`: Config, ConfigLoader, Environment, formatters.
+#Package pt.rafap.kpb.utils
+Config, ConfigLoader, Environment, formatters.
 
 ## Usage
 Load configuration with defaults:

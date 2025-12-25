@@ -6,5 +6,11 @@ package pt.rafap.kpb.utils
  */
 interface Config {
     val map: Map<String, String>
+
+    /**
+     * Returns the default configuration entries to be written to the config file.
+     *
+     * @return A map of configuration keys to their default values.
+     */
     fun getDefaultConfigFileEntries(): Map<String, String>
 }

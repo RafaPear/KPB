@@ -49,6 +49,11 @@ class ModuleBuildScope(val name: String, val simpleName: String, val group: Stri
         gradleFiles.add(buildFileContent)
     }
 
+    /**
+     * Builds and returns the configured module.
+     *
+     * @return The built Module instance.
+     */
     fun build(): Module {
         return Module(
             name,

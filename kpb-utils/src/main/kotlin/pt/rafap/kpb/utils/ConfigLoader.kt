@@ -12,7 +12,12 @@ class ConfigLoader<U : Config>(
     val factory: (Map<String, String>) -> U,
 ) {
     /**
-     * Loads the configuration into a Map.
+     * Loads the configuration from the properties file.
+     *
+     * If the file doesn't exist, creates it with default values.
+     * Merges any new default entries into the existing file.
+     *
+     * @return The loaded configuration instance.
      */
     fun loadConfig(): U {
         val props = Properties()

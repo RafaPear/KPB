@@ -1,12 +1,16 @@
 package pt.rafap.kpb.app
 
 import androidx.compose.ui.window.*
-import kpb.kpb_app.generated.resources.Res
-import kpb.kpb_app.generated.resources.reversi
-import org.jetbrains.compose.resources.painterResource
 import pt.rafap.kpb.utils.LOGGER
 import java.lang.System.setProperty
 
+/**
+ * Main entry point for the KPB application.
+ *
+ * Initializes a Compose Desktop window for the interactive project builder interface.
+ *
+ * @param args Command-line arguments (currently unused).
+ */
 fun main(args: Array<String>) {
     setProperty("apple.awt.application.name", "kbp-DEV")
     
@@ -24,7 +28,6 @@ fun main(args: Array<String>) {
         Window(
             onCloseRequest = ::safeExitApplication,
             title = "kbp-DEV",
-            icon = painterResource(Res.drawable.reversi),
             state = windowState,
         ) {
             window.minimumSize = java.awt.Dimension(800, 600)

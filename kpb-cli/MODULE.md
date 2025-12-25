@@ -1,9 +1,9 @@
-# Module kpb-cli
+#Module kpb-cli
 
 Command-line interface for KPB using KtFlag for argument parsing.
 
-## Packages
-- `pt.rafap.kpb.cli`: CLI entry points and commands.
+#Package pt.rafap.kpb.cli
+CLI entry points and commands.
 
 ## Usage
 Build and run:

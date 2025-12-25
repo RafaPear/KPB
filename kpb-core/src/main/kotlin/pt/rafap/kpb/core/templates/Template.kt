@@ -40,6 +40,10 @@ data class Template(
             }
         }
 
+        /**
+         * An empty template with no configuration.
+         * Useful as a starting point or neutral element in template combination.
+         */
         val EMPTY_TEMPLATE = Template(
             versionCatalog = VersionCatalog(),
             modules = emptyList(),

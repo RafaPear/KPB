@@ -6,6 +6,15 @@ import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
+/**
+ * Creates a template for executable application modules.
+ *
+ * Configures modules as application modules with Shadow plugin support for creating fat JARs.
+ * Adds Gradle tasks for building and running each application module.
+ *
+ * @param modules The list of modules to configure as applications.
+ * @return A Template configured for application modules with executable JAR support.
+ */
 fun Project.createAppTemplate(modules: List<Module>): Template {
     val template = this.buildTemplate {
         modules.map { module ->

@@ -4,6 +4,15 @@ import pt.rafap.kpb.core.gradle.content.Version
 import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
+/**
+ * Creates a template for Dokka documentation generation.
+ *
+ * Configures the project and all modules with the Dokka plugin for generating
+ * API documentation. Sets up HTML output, visibility modifiers, and includes
+ * MODULE.md files as package documentation.
+ *
+ * @return A Template configured with Dokka documentation generation for the entire project.
+ */
 fun Project.createDokkaTemplate(): Template = this.buildTemplate {
     gradleFileTemplate("build.gradle.kts") {
         plugin("dokka", "org.jetbrains.dokka", apply = true) {
