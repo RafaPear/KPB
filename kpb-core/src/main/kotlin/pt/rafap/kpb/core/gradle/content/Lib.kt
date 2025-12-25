@@ -12,5 +12,6 @@ data class Lib(
     val name: String,
     val versionRef: String,
     val id: String,
+    val write: Boolean = true,
     val isTest: Boolean = false,
 )

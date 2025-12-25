@@ -15,26 +15,26 @@ class TemplateBuilderScope(val rootProject: Project): BuilderScope {
     private var gradleFiles = mutableListOf<GradleFile>()
     private var handlers = mutableListOf<(Project) -> Project>()
 
-    override fun file(path: String, content: () -> String?) {
+    override fun fileTemplate(path: String, content: () -> String?) {
         kpbFiles.add(KpbFile(path, content()))
     }
 
-    override fun gradleFile(gradleFile: GradleFile) {
+    override fun gradleFileTemplate(gradleFile: GradleFile) {
         versionCatalog += gradleFile.versionCatalog
         gradleFiles.add(gradleFile)
     }
 
-    override fun gradleFile(
+    override fun gradleFileTemplate(
         name: String,
         gradleFile: GradleFileBuildScope.() -> Unit
     ) {
         val gradleFileScope = GradleFileBuildScope(name)
         gradleFileScope.gradleFile()
-        val gradleFile = gradleFileScope.build()
-        gradleFile(gradleFile)
+        val gradleFile = gradleFileScope.buildGradleFile()
+        gradleFileTemplate(gradleFile)
     }
 
-    override fun module(module: Module) {
+    override fun moduleTemplate(module: Module) {
         versionCatalog += module.versionCatalog
         modules.add(module)
     }
@@ -43,17 +43,22 @@ class TemplateBuilderScope(val rootProject: Project): BuilderScope {
         handlers.add(handler)
     }
 
-    override fun module(
+    override fun moduleTemplate(
         name: String,
+        simpleName: String,
         module: ModuleBuildScope.() -> Unit
     ) {
-        val moduleScope = ModuleBuildScope(name, rootProject.group)
+        val group = if (rootProject.group == null) simpleName
+        else if (simpleName.isBlank()) rootProject.group
+        else "${rootProject.group}.$simpleName"
+
+        val moduleScope = ModuleBuildScope(name, simpleName, group)
         moduleScope.module()
         val module = moduleScope.build()
-        module(module)
+        moduleTemplate(module)
     }
 
-    override fun build(): Template {
+    override fun buildTemplate(): Template {
         return Template(
             versionCatalog = versionCatalog,
             modules = modules,

@@ -5,12 +5,13 @@ import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.gradle.GradleFileBuildScope
 import pt.rafap.kpb.core.gradle.VersionCatalog
 
-class ModuleBuildScope(val name: String, val groupPath: String?): BuilderScope {
+class ModuleBuildScope(val name: String, val simpleName: String, val group: String?) : BuilderScope {
     private val files = mutableListOf<KpbFile>()
     private var versionCatalog: VersionCatalog = VersionCatalog()
     private var gradleFiles = mutableListOf<GradleFile>()
+    val groupPath = group?.replace('.', '/')
 
-    override fun file(path: String, content: () -> String?) {
+    override fun fileModule(path: String, content: () -> String?) {
         files.add(KpbFile(path, content()))
     }
 
@@ -22,34 +23,40 @@ class ModuleBuildScope(val name: String, val groupPath: String?): BuilderScope {
 
     override fun srcMainFile(path: String, content: () -> String?) {
         val fullPath = buildSrcPath("main", path)
-        file(fullPath, content)
+        fileModule(fullPath, content)
     }
 
     override fun srcTestFile(path: String, content: () -> String?) {
         val fullPath = buildSrcPath("test", path)
-        file(fullPath, content)
+        fileModule(fullPath, content)
     }
 
     override fun srcFile(srcName: String, path: String, content: () -> String?) {
         val fullPath = buildSrcPath(srcName, path)
-        file(fullPath, content)
+        fileModule(fullPath, content)
     }
 
     override fun resourceFile(path: String, content: () -> String?) {
         val fullPath = buildSrcPath("main/resources", path)
-        file(fullPath, content)
+        fileModule(fullPath, content)
     }
 
-    fun buildGradle(func: GradleFileBuildScope.() -> Unit) {
+    override fun buildGradleModule(func: GradleFileBuildScope.() -> Unit) {
         val scope = GradleFileBuildScope("build.gradle.kts")
         scope.func()
-        val buildFileContent = scope.build()
+        val buildFileContent = scope.buildGradleFile()
         versionCatalog += buildFileContent.versionCatalog
         gradleFiles.add(buildFileContent)
     }
 
     fun build(): Module {
-        buildGradle {}
-        return Module(name, files, gradleFiles, versionCatalog)
+        return Module(
+            name,
+            simpleName,
+            group ?: "",
+            files,
+            gradleFiles,
+            versionCatalog
+        )
     }
 }

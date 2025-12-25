@@ -1,19 +1,30 @@
 package pt.rafap.kpb.core.templates
 
-import pt.rafap.kpb.core.gradle.GradleFile.Companion.buildGradleFile
-import pt.rafap.kpb.core.gradle.content.Other
 import pt.rafap.kpb.core.gradle.content.Version
 import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
-fun Project.createDefaultTemplate(): Template = this.buildTemplate {
+fun Project.createDefaultTemplate(version: String): Template = this.buildTemplate { project ->
+    val isVersionValid =
+        Regex("^[1-9]\\d*(?:\\.(0|[1-9]\\d*))?(?:\\.(0|[1-9]\\d*))?$")
+            .matches(version)
+
+    if (!isVersionValid) {
+        throw IllegalArgumentException(
+            "Illegal version: '$version' is not a valid version.\n" +
+                    "Correct format: 'MAJOR[.MINOR][.PATCH]', where:\n" +
+                    "MAJOR is an integer > 0;\n" +
+                    "MINOR is an optional non-negative integer;\n" +
+                    "PATCH is an optional non-negative integer."
+        )
+    }
     val moduleNames = modules.map { it.name }
-    gradleFile(
+    gradleFileTemplate(
         name = "settings.gradle.kts"
     ) {
         other {
             """
-                    rootProject.name = "${it.name}"
+                    rootProject.name = "${project.name}"
 
                     enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -25,7 +36,7 @@ fun Project.createDefaultTemplate(): Template = this.buildTemplate {
         }
     }
 
-    gradleFile(
+    gradleFileTemplate(
         name = "build.gradle.kts"
     ) {
         plugin("kotlin", "org.jetbrains.kotlin.jvm", apply = false) {
@@ -38,6 +49,8 @@ fun Project.createDefaultTemplate(): Template = this.buildTemplate {
             }
             sb.appendLine(
                 """
+            version = "$version"
+            
             allprojects {
                 repositories {
                     gradlePluginPortal()

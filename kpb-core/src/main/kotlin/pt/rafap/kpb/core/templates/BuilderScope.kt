@@ -7,11 +7,11 @@ import pt.rafap.kpb.core.module.ModuleBuildScope
 import pt.rafap.kpb.core.project.Project
 
 interface BuilderScope {
-    fun file(path: String, content: () -> String? = { null })
-    fun gradleFile(name: String, gradleFile: GradleFileBuildScope.() -> Unit)
-    fun gradleFile(gradleFile: GradleFile)
-    fun module(name: String, module: ModuleBuildScope.() -> Unit)
-    fun module(module: Module)
+    fun fileTemplate(path: String, content: () -> String? = { null })
+    fun gradleFileTemplate(name: String, gradleFile: GradleFileBuildScope.() -> Unit)
+    fun gradleFileTemplate(gradleFile: GradleFile)
+    fun moduleTemplate(name: String, simpleName: String, module: ModuleBuildScope.() -> Unit)
+    fun moduleTemplate(module: Module)
     fun handler(handler: (Project) -> Project)
-    fun build(): Template
+    fun buildTemplate(): Template
 }

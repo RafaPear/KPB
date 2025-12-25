@@ -7,12 +7,14 @@ import pt.rafap.kpb.core.project.KpbFile
 
 data class Module(
     val name: String,
+    val simpleName: String,
+    val group: String,
     val files: List<KpbFile>,
     val gradleFiles: List<GradleFile>,
     val versionCatalog: VersionCatalog
 ) {
     operator fun plus(other: Module): Module {
-        if (this.name != other.name) {
+        if (this.name != other.name || this.group != other.group || this.simpleName != other.simpleName) {
             throw IllegalArgumentException("Cannot combine modules with different names: '${this.name}' and '${other.name}'")
         }
         val combinedFiles = this.files.toMutableList()
@@ -25,6 +27,8 @@ data class Module(
         val combinedVersionCatalog = this.versionCatalog + other.versionCatalog
         val module = Module(
             name = this.name,
+            simpleName = this.simpleName,
+            group = this.group,
             files = combinedFiles,
             gradleFiles = newGradleFiles,
             versionCatalog = combinedVersionCatalog
@@ -33,9 +37,9 @@ data class Module(
     }
 
     companion object {
-        fun buildModule(name: String, group: String? = null, func: ModuleBuildScope.() -> Unit): Module {
-            val newGroup = group?.replace(".", "/")
-            val scope = ModuleBuildScope(name, newGroup)
+        fun buildModule(name: String, simpleName: String, group: String? = null, func: ModuleBuildScope.() -> Unit): Module {
+            val newGroup = if (group == null) simpleName else "$group.$simpleName"
+            val scope = ModuleBuildScope(name, simpleName, newGroup)
             scope.func()
             return scope.build()
         }

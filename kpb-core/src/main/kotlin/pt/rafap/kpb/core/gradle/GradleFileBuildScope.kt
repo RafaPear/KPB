@@ -22,17 +22,21 @@ class GradleFileBuildScope(val name: String): BuilderScope {
     /**
      * Adds a library dependency to the Gradle file and registers it in the version catalog.
      */
-    override fun library(name: String, id: String, version: () -> Version) {
+    override fun library(name: String, id: String, write: Boolean, version: () -> Version) {
         val ver = version()
         versions.add(ver)
-        libraries.add(Lib(name, ver.name, id))
+        libraries.add(Lib(name, ver.name, id, write))
     }
 
     /**
      * Adds a module dependency to the Gradle file.
      */
-    override fun module(module: () -> Module) {
+    override fun moduleGradle(module: () -> Module) {
         modules.add(module())
+    }
+
+    override fun moduleGradle(module: Module) {
+        modules.add(module)
     }
 
     /**
@@ -72,7 +76,7 @@ class GradleFileBuildScope(val name: String): BuilderScope {
         imports.add(path)
     }
 
-    override fun build(): GradleFile {
+    override fun buildGradleFile(): GradleFile {
         return GradleFile(
             name = name,
             imports = imports,

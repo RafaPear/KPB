@@ -10,7 +10,8 @@ import java.io.File
  */
 class KpbFile(
     val path: String,
-    val content: String?
+    val content: String?,
+    val file: File? = null
 ) {
 
     /**
@@ -19,6 +20,10 @@ class KpbFile(
     fun create() {
         val file = File(path)
         file.parentFile?.mkdirs()
-        file.writeText(content ?: "")
+        file.writeBytes(
+            content?.toByteArray() ?:
+            this.file?.readBytes() ?:
+            ByteArray(0)
+        )
     }
 }

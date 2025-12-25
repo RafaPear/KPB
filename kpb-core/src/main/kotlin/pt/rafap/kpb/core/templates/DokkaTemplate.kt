@@ -5,7 +5,7 @@ import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
 fun Project.createDokkaTemplate(): Template = this.buildTemplate {
-    gradleFile("build.gradle.kts") {
+    gradleFileTemplate("build.gradle.kts") {
         plugin("dokka", "org.jetbrains.dokka", apply = true) {
             Version("dokka", "2.1.0")
         }

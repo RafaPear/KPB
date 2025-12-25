@@ -13,12 +13,12 @@ import pt.rafap.kpb.core.templates.Template
  * setting the group ID, adding Gradle files, modules, and applying templates.
  */
 interface BuilderScope {
-    fun file(path: String, content: () -> String? = { null })
+    fun fileProject(path: String, content: () -> String? = { null })
     fun group(group: String)
-    fun gradleFile(name: String, gradleFile: GradleFileBuildScope.() -> Unit)
-    fun gradleFile(gradleFile: GradleFile)
-    fun module(name: String, module: ModuleBuildScope.() -> Unit)
-    fun module(module: Module)
-    fun template(template: (Project) -> Template)
-    fun build(): Project
+    fun gradleFileProject(name: String, gradleFile: GradleFileBuildScope.() -> Unit)
+    fun gradleFileProject(gradleFile: GradleFile)
+    fun moduleProject(name: String, simpleName: String, module: ModuleBuildScope.() -> Unit): Module
+    fun moduleProject(module: Module)
+    fun templateProject(template: (Project) -> Template)
+    fun buildProject(): Project
 }

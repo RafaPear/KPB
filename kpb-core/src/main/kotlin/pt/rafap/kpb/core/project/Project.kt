@@ -183,7 +183,7 @@ data class Project(
         fun buildProject(name: String, func: ProjectBuilderScope.() -> Unit): Project {
             val scope = ProjectBuilderScope(name)
             scope.func()
-            return scope.build()
+            return scope.buildProject()
         }
     }
 }

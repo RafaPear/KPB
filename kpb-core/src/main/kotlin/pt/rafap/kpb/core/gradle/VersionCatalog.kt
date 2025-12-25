@@ -89,9 +89,9 @@ data class VersionCatalog(
      * Merges this catalog with another, combining entries and removing duplicates.
      */
     operator fun plus(other: VersionCatalog): VersionCatalog {
-        val libs = (this.libs + other.libs).distinct()
-        val versions = (this.versions + other.versions).distinct()
-        val plugins = (this.plugins + other.plugins).distinct()
+        val libs = (this.libs + other.libs).distinctBy { it.name }
+        val versions = (this.versions + other.versions).distinctBy { it.name }
+        val plugins = (this.plugins + other.plugins).distinctBy { it.id }
 
         return VersionCatalog(
             libs = libs,

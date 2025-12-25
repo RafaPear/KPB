@@ -2,16 +2,16 @@ package pt.rafap.kpb.core.templates
 
 import pt.rafap.kpb.core.gradle.GradleFile.Companion.buildGradleFile
 import pt.rafap.kpb.core.gradle.content.Version
+import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.project.Project
 import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
 
-fun Project.createAppTemplate(moduleNames: List<String>): Template {
+fun Project.createAppTemplate(modules: List<Module>): Template {
     val template = this.buildTemplate {
-        moduleNames.map { moduleName ->
-            module(name = moduleName) {
-                buildGradle {
-                    otherPlugin("application", true)
-                    other { createBuildGradleApp(moduleName, groupPath) }
+        modules.map { module ->
+            moduleTemplate(module.name, module.simpleName) {
+                buildGradleModule {
+                    createBuildGradleApp(module)
                 }
             }
         }
@@ -26,8 +26,8 @@ fun Project.createAppTemplate(moduleNames: List<String>): Template {
                             ) {
                                 Version("shadow", "8.1.1")
                             }
-                            moduleNames.forEach { moduleName ->
-                                other { createJarRunTask(moduleName) }
+                            modules.forEach { module ->
+                                other { createJarRunTask(module.simpleName) }
                             }
                         }
             )
@@ -52,11 +52,10 @@ private fun createJarRunTask(moduleName: String): String {
     return str
 }
 
-private fun createBuildGradleApp(moduleName: String, group: String?): String {
-    val newGroup = group ?: ""
+private fun createBuildGradleApp(module: Module): String {
     val str = """
     application {
-        mainClass.set("${newGroup}.$moduleName.MainKt")
+        mainClass.set("${module.group}.MainKt")
     }
     
     // === Fat JAR Task ===

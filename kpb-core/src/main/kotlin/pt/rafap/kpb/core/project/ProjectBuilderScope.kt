@@ -24,7 +24,7 @@ class ProjectBuilderScope(val name: String): BuilderScope {
     /**
      * Adds a file to the project root.
      */
-    override fun file(path: String, content: () -> String?) {
+    override fun fileProject(path: String, content: () -> String?) {
         kpbFiles.add(KpbFile(path, content()))
     }
 
@@ -45,7 +45,7 @@ class ProjectBuilderScope(val name: String): BuilderScope {
     /**
      * Adds a pre-built [GradleFile] to the project.
      */
-    override fun gradleFile(gradleFile: GradleFile) {
+    override fun gradleFileProject(gradleFile: GradleFile) {
         versionCatalog += gradleFile.versionCatalog
         gradleFiles.add(gradleFile)
     }
@@ -53,20 +53,20 @@ class ProjectBuilderScope(val name: String): BuilderScope {
     /**
      * Configures and adds a [GradleFile] using the DSL.
      */
-    override fun gradleFile(
+    override fun gradleFileProject(
         name: String,
         gradleFile: GradleFileBuildScope.() -> Unit
     ) {
         val gradleFileScope = GradleFileBuildScope(name)
         gradleFileScope.gradleFile()
-        val gradleFile = gradleFileScope.build()
-        gradleFile(gradleFile)
+        val gradleFile = gradleFileScope.buildGradleFile()
+        gradleFileProject(gradleFile)
     }
 
     /**
      * Adds a pre-built [Module] to the project.
      */
-    override fun module(module: Module) {
+    override fun moduleProject(module: Module) {
         versionCatalog += module.versionCatalog
         modules.add(module)
     }
@@ -74,15 +74,17 @@ class ProjectBuilderScope(val name: String): BuilderScope {
     /**
      * Configures and adds a [Module] using the DSL.
      */
-    override fun module(
+    override fun moduleProject(
         name: String,
+        simpleName: String,
         module: ModuleBuildScope.() -> Unit
-    ) {
-        val newGroup = group?.replace(".", "/")
-        val scope = ModuleBuildScope(name, newGroup)
+    ): Module {
+        val newGroup = "$group.$simpleName".trimEnd('.')
+        val scope = ModuleBuildScope(name, simpleName, newGroup)
         scope.module()
         val module = scope.build()
-        module(module)
+        moduleProject(module)
+        return module
     }
 
     /**
@@ -90,7 +92,7 @@ class ProjectBuilderScope(val name: String): BuilderScope {
      * The template function receives the current project state (without parsing) to allow
      * conditional logic based on project configuration.
      */
-    override fun template(template: (Project) -> Template) {
+    override fun templateProject(template: (Project) -> Template) {
         println("Applying template to project $name")
         templates.add(template(buildNoParse()))
     }
@@ -107,7 +109,7 @@ class ProjectBuilderScope(val name: String): BuilderScope {
         )
     }
 
-    override fun build(): Project {
+    override fun buildProject(): Project {
         return buildNoParse().parseProject()
     }
 }

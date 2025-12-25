@@ -6,6 +6,7 @@ import pt.rafap.kpb.core.gradle.content.Lib
 import pt.rafap.kpb.core.gradle.content.Other
 import pt.rafap.kpb.core.gradle.content.OtherPlugin
 import pt.rafap.kpb.core.gradle.content.Plugin
+import pt.rafap.kpb.core.mergeModules
 import pt.rafap.kpb.core.module.Module
 
 /**
@@ -60,7 +61,8 @@ data class GradleFile(
                 }
                 libs.forEach {
                     val configuration = if (it.isTest) "testImplementation" else "implementation"
-                    appendLine("    $configuration(libs.${it.name})")
+                    if (it.write)
+                        appendLine("    $configuration(libs.${it.name})")
                 }
                 dependencies.forEach {
                     appendLine("    ${it.definition}")
@@ -88,11 +90,11 @@ data class GradleFile(
         return GradleFile(
             name = this.name,
             imports = (this.imports + other.imports).distinct(),
-            plugins = (this.plugins + other.plugins).distinct(),
+            plugins = (this.plugins + other.plugins).distinctBy { it.id },
             otherPlugins = (this.otherPlugins + other.otherPlugins).distinct(),
             dependencies = (this.dependencies + other.dependencies).distinct(),
-            libs = (this.libs + other.libs).distinct(),
-            modules = this.modules + other.modules,
+            libs = (this.libs + other.libs).distinctBy { it.name },
+            modules = this.modules.mergeModules(other.modules),
             others = (this.others + other.others).distinct(),
             versionCatalog = this.versionCatalog + other.versionCatalog
         )
@@ -106,7 +108,7 @@ data class GradleFile(
         fun buildGradleFile(name: String, func: GradleFileBuildScope.() -> Unit): GradleFile {
             val scope = GradleFileBuildScope(name)
             scope.func()
-            return scope.build()
+            return scope.buildGradleFile()
         }
     }
 }
