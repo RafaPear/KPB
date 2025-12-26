@@ -1,143 +1,89 @@
 # Kotlin Project Builder (KPB)
 
-Kotlin Project Builder (KPB) is a multi-module toolkit to scaffold and build Kotlin projects quickly and consistently.
-It provides a small DSL and utilities to compose modules, Gradle files, version catalogs, and arbitrary files, then
-materialize them on disk. It includes a CLI and an app entry for interactive use.
+**Kotlin Project Builder (KPB)** is a powerful, multi-module toolkit designed to streamline the scaffolding, creation, and management of Kotlin projects. It empowers developers to generate structured projects, manage dependencies via Version Catalogs, and maintain configuration consistency with ease.
 
-- Core concepts: Project, Module, GradleFile, VersionCatalog, Templates.
-- Modules: `kpb-core`, `kpb-utils`, `kpb-storage`, `kpb-cli`, `kpb-app`.
+KPB offers both a robust **CLI (Command Line Interface)** for terminal users and an experimental **GUI App** (Compose Desktop).
 
-## Features
+## 🚀 Features
 
-- Compose a project from reusable templates and modules.
-- Merge Gradle files and version catalogs safely.
-- Storage abstractions for saving/loading domain state.
-- CLI for quick interactions; app entry for richer UX.
+### 🛠 Project & Module Management
+- **Structured Scaffolding:** Initialize new Kotlin projects with best-practice directory structures.
+- **Dynamic Modules:** Add, remove, and configure modules (e.g., Core, CLI, App, Utils) on the fly.
+- **Smart Templates:** Apply built-in templates to jumpstart development:
+    - **Compose Desktop:** Ready-to-run desktop application setup.
+    - **CLI Tools:** Standard command-line tool structure.
+    - **Libraries:** Clean setup for Kotlin libraries.
+- **File Generation:** Inject source code (`.kt`) and resources directly into modules.
 
-## Requirements
+### 📦 Dependency Management
+- **Version Catalog Integration:** First-class support for `libs.versions.toml`. Manage versions, libraries, and plugins centrally.
+- **Automated Updates:** Add dependencies and plugins through the tool, automatically updating the version catalog.
+- **Inter-Module Linking:** Easily define dependencies between your project's modules.
 
-- JDK 21+
-- Gradle (the wrapper is included)
+### 💾 Persistence & State
+- **Save/Load Configurations:** Serialize your entire project state to JSON. Pause and resume your work anytime.
+- **Folder-Based Storage:** Save project structures to specific folders, including all generated files and configurations.
 
-## Installation
+### 🔍 Observability
+- **Comprehensive Logging:** Detailed logs (Console & File) to track every action, ensuring transparency and easier debugging.
 
-You can build the project and use the generated JARs under `build/libs` and per-module `build/libs`.
+---
+
+## 📦 Modules Overview
+
+The project is organized into several key modules:
+
+- **`kpb-core`**: The brain of the operation. Contains the domain logic (Project, Module, GradleFile, VersionCatalog), persistence, and the DSL for project composition.
+- **`kpb-cli`**: The primary interface. A fully functional interactive command-line tool.
+- **`kpb-app`**: (*Experimental*) A Compose Desktop graphical interface. Currently in early development.
+- **`kpb-utils`**: Shared utilities for logging, formatting, audio helpers, and environment management.
+
+## ⚡ Quick Start
+
+### Prerequisites
+- **JDK 21+**
+- **Gradle** (Wrapper included)
+
+### Installation & Building
+Clone the repository and build the project using Gradle:
 
 ```sh
 ./gradlew clean build
 ```
 
-Alternatively, run specific modules:
+Artifacts will be generated in `build/libs` and within each module's `build/libs` directory.
 
-```sh
-./gradlew :kpb-cli:build
-./gradlew :kpb-app:build
-```
-
-## Quick Start
-
-### Run the CLI
-
-After building, run the CLI JAR:
+### 🖥 Running the CLI (Recommended)
+The CLI is the primary way to use KPB currently. It provides an interactive menu system.
 
 ```sh
 java -jar kpb-cli/build/libs/kpb-cli-1.0.1.jar
 ```
 
-- Uses KtFlag for argument parsing.
-- Type `help` inside the CLI to list commands.
+Once running, follow the on-screen prompts to:
+1. Create a new project.
+2. Add modules and dependencies.
+3. Generate the project files to disk.
 
-### Run the App
-
-After building, run the app JAR:
-
-```sh
-java -jar kpb-app/build/libs/kpb-app-1.0.1.jar
-```
-
-## Modules Overview
-
-- kpb-core: Core domain (Project, Module, GradleFile, VersionCatalog, Templates) and DSL to compose projects.
-- kpb-utils: Utilities (configuration loader, environment helpers, formatting, audio helpers).
-- kpb-storage: Sync and async storage abstractions and file-based implementations.
-- kpb-cli: Command-line interface entry points and commands.
-- kpb-app: App entry point that wires the core.
-
-## Developing
-
-- Use the Gradle wrapper for all tasks.
-- Follow KDoc standards (see below) for public APIs.
-
-Common tasks:
+### 🎨 Running the App (Experimental)
+> **Note:** The GUI App is currently incomplete and intended for development/testing purposes only.
 
 ```sh
-./gradlew build
-./gradlew test
+java -jar kpb-app/build/libs/kpb-app-v1.0.1.jar
 ```
 
-## Documentation (Dokka)
+## 🛠 Developing
 
-Generate API docs:
+We welcome contributions! Here are some common tasks:
 
-```sh
-./gradlew dokkaHtml
-```
+- **Build:** `./gradlew build`
+- **Test:** `./gradlew test`
+- **Generate Docs:** `./gradlew dokkaHtml` (Output: `build/dokka/html/index.html`)
 
-- Output is under `build/dokka/html/index.html` and per-module `build/dokka-module/html`.
-- Module overviews come from each module's `MODULE.md`.
+### KDoc Standards
+Please ensure all public APIs are documented:
+- concise summary.
+- `@param` and `@return` descriptions.
+- `@throws` for expected exceptions.
 
-## KDoc Standards
-
-- Provide a concise summary on classes and functions.
-- Document non-trivial parameters (`@param`) and return values (`@return`).
-- Use `@throws` for expected exceptions and IO semantics.
-- Data classes: use `@property` for key fields.
-- Include a small usage example when helpful.
-
-## Release & Versioning
-
-- JARs are versioned via Gradle and placed under `build/libs` and per-module `build/libs`.
-- Update `gradle.properties` or module `build.gradle.kts` to bump versions.
-
-## Contributing
-
-- Open PRs with tests and KDoc.
-- Run Dokka and ensure there are no blocking warnings before merging.
-
-## Links
-
-- Local docs: `build/dokka/html/index.html` after running Dokka.
-- Module docs: `kpb-*/build/dokka-module/html/index.html`.
-
-## Roadmap & Current Status
-
-KPB is under active development. Here’s what’s working today and what’s next:
-
-- Current state
-    - Core: Functional and tested. You can compose Projects, merge Gradle files and version catalogs, and materialize to
-      disk.
-    - CLI: Starts, but commands are minimal/stubbed. No user-facing features implemented yet.
-    - App: Starts, but no features implemented yet.
-    - Storage/Utils: Core interfaces and basic file-backed implementations/utilities are available and tested.
-
-- Near-term milestones
-    1. CLI MVP
-        - Project scaffold command (generate from template)
-        - Config management (read/update settings)
-        - Help and command discovery
-    2. App MVP
-        - Interactive wizard to create a new project
-        - Preview virtual structure before writing to disk
-    3. Templates & DSL enhancements
-        - Built-in templates for common Kotlin/JVM patterns
-        - Higher-level helpers for Gradle configuration
-    4. Docs & Examples
-        - End-to-end examples in docs (core + CLI)
-        - Publish API docs (Dokka)
-
-- Priorities
-    - Stabilize public API in `kpb-core`
-    - Ship CLI scaffold flow
-    - Keep KDoc coverage high and CI checks green
-
-If you’re interested in contributing, focus on CLI commands and app flows first—those unlock most user value.
+*Generated by Kotlin Project Builder Team*
