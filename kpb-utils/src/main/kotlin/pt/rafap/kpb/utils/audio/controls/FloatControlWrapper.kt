@@ -11,6 +11,7 @@ import javax.sound.sampled.FloatControl
  * @throws IllegalArgumentException if the specified control type is not supported by the Clip.
  * @throws ClassCastException if the control retrieved is not a FloatControl.
  */
+@Suppress("unused")
 abstract class FloatControlWrapper(clip: Clip, controlType: FloatControl.Type) {
     protected val control: FloatControl = clip.getControl(controlType) as FloatControl
     val defaultValue: Float = control.value

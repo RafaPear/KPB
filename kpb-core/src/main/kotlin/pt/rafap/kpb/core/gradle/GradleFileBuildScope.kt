@@ -9,7 +9,7 @@ import pt.rafap.kpb.core.module.Module
  *
  * Allows adding libraries, plugins, dependencies, and arbitrary content blocks to a Gradle file.
  */
-class GradleFileBuildScope(val name: String): BuilderScope {
+class GradleFileBuildScope(val name: String) : BuilderScope {
     private val imports = mutableListOf<String>()
     private val plugins = mutableListOf<Plugin>()
     private val otherPlugins = mutableListOf<OtherPlugin>()
@@ -18,14 +18,15 @@ class GradleFileBuildScope(val name: String): BuilderScope {
     private val modules = mutableListOf<Module>()
     private val versions = mutableListOf<Version>()
     private val others = mutableListOf<Other>()
+    private val repositories = mutableListOf<String>()
 
     /**
      * Adds a library dependency to the Gradle file and registers it in the version catalog.
      */
-    override fun library(name: String, id: String, write: Boolean, version: () -> Version) {
+    override fun library(name: String, id: String, write: Boolean, isTest: Boolean, version: () -> Version) {
         val ver = version()
         versions.add(ver)
-        libraries.add(Lib(name, ver.name, id, write))
+        libraries.add(Lib(name, id, ver.name, write, isTest))
     }
 
     /**
@@ -76,17 +77,22 @@ class GradleFileBuildScope(val name: String): BuilderScope {
         imports.add(path)
     }
 
+    override fun repository(repository: String) {
+        repositories.add(repository)
+    }
+
     override fun buildGradleFile(): GradleFile {
         return GradleFile(
-            name = name,
-            imports = imports,
-            plugins = plugins,
-            libs = libraries,
-            others = others,
-            dependencies = dependencies,
-            modules = modules,
-            otherPlugins = otherPlugins,
-            versionCatalog = buildVersionCatalog()
+            name,
+            imports,
+            plugins,
+            otherPlugins,
+            dependencies,
+            libraries,
+            modules,
+            others,
+            repositories,
+            buildVersionCatalog()
         )
     }
 

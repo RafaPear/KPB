@@ -16,7 +16,7 @@ import pt.rafap.kpb.core.project.Project
  *
  * @property rootProject The project that this template is being built for.
  */
-class TemplateBuilderScope(val rootProject: Project): BuilderScope {
+class TemplateBuilderScope(val rootProject: Project) : BuilderScope {
     private val kpbFiles = mutableListOf<KpbFile>()
     private val modules = mutableListOf<Module>()
     private var versionCatalog: VersionCatalog = VersionCatalog()

@@ -1,7 +1,9 @@
 package pt.rafap.kpb.utils.audio
 
 import kotlinx.coroutines.delay
-import pt.rafap.kpb.utils.LOGGER
+import pt.rafap.kpb.utils.LogManager
+
+private val logger = LogManager.getLogger("AudioPool")
 
 /**
  * Represents a pool of audio tracks that can be managed together.
@@ -10,7 +12,7 @@ import pt.rafap.kpb.utils.LOGGER
 @Suppress("Unused")
 data class AudioPool(val pool: List<AudioWrapper>) {
     init {
-        LOGGER.info("AudioPool created with ${pool.size} audio tracks")
+        logger.info("AudioPool created with ${pool.size} audio tracks")
         resetBalance()
         resetMasterVolume()
     }

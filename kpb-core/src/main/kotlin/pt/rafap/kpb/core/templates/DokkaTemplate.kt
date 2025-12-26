@@ -14,19 +14,17 @@ import pt.rafap.kpb.core.templates.Template.Companion.buildTemplate
  * @return A Template configured with Dokka documentation generation for the entire project.
  */
 fun Project.createDokkaTemplate(): Template = this.buildTemplate {
-    gradleFileTemplate("build.gradle.kts") {
+    gradleFileTemplate(
+        name = "build.gradle.kts"
+    ) {
         plugin("dokka", "org.jetbrains.dokka", apply = true) {
             Version("dokka", "2.1.0")
         }
         other {
-                """
+            """
                 buildscript { dependencies { classpath("org.jetbrains.dokka:dokka-base:2.0.0") } }
                 
                 allprojects {
-                    repositories {
-                        gradlePluginPortal()
-                        mavenCentral()
-                    }
 
                     apply(plugin = "org.jetbrains.dokka")
                     

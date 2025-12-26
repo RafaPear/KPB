@@ -1,12 +1,14 @@
 package pt.rafap.kpb.utils.audio
 
-import pt.rafap.kpb.utils.LOGGER
+import pt.rafap.kpb.utils.LogManager
 import pt.rafap.kpb.utils.audio.controls.BooleanControlWrapper
 import pt.rafap.kpb.utils.audio.controls.FloatControlWrapper
 import java.net.URL
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
+
+private val logger = LogManager.getLogger("AudioWrapper")
 
 /**
  * A wrapper for an audio Clip, providing methods to control playback and audio properties.
@@ -36,7 +38,7 @@ data class AudioWrapper(
 
     init {
         clip.framePosition = modifier.startPosition?.coerceIn(0, clip.frameLength - 1) ?: 0
-        LOGGER.info("AUDIO '${id}' initialized")
+        logger.info("AUDIO '${id}' initialized")
     }
 
     fun isLoaded(): Boolean = clip.isOpen
@@ -66,7 +68,7 @@ data class AudioWrapper(
             Thread.sleep(1)
             elapsed++
             if (elapsed > 2000) {
-                LOGGER.warning("AUDIO '${id}' failed to start playing after 2 seconds")
+                logger.warning("AUDIO '${id}' failed to start playing after 2 seconds")
                 break
             }
         }

@@ -62,18 +62,6 @@ fun GradleFileBuildScope.createBuildGradleComposeDesktopApp() {
     ) {
         Version("composeHotReload", "1.0.0-rc02")
     }
-    other {
-        """
-        allprojects {
-            repositories {
-                gradlePluginPortal()
-                mavenCentral()
-                google()
-                maven { url = uri("https://jitpack.io") }
-            }
-        }
-        """.trimIndent()
-    }
 }
 
 fun GradleFileBuildScope.createModuleBuildGradleComposeApp(module: Module) {
@@ -106,9 +94,6 @@ fun GradleFileBuildScope.createModuleBuildGradleComposeApp(module: Module) {
     }
     dependency {
         Dependency("implementation(compose.foundation)")
-    }
-    dependency {
-        Dependency("implementation(compose.material3)")
     }
     dependency {
         Dependency("implementation(compose.ui)")
@@ -151,6 +136,7 @@ fun GradleFileBuildScope.createModuleBuildGradleComposeApp(module: Module) {
     import("org.jetbrains.compose.desktop.application.dsl.TargetFormat")
     other {
         """
+            
                             compose.desktop {
                                 application {
                                     mainClass = "${module.group}.MainKt"
@@ -168,4 +154,5 @@ fun GradleFileBuildScope.createModuleBuildGradleComposeApp(module: Module) {
                             }
                         """.trimIndent()
     }
+    repository("google()")
 }

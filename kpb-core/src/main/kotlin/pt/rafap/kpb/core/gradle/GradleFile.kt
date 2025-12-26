@@ -1,13 +1,9 @@
 package pt.rafap.kpb.core.gradle
 
-import pt.rafap.kpb.core.project.KpbFile
-import pt.rafap.kpb.core.gradle.content.Dependency
-import pt.rafap.kpb.core.gradle.content.Lib
-import pt.rafap.kpb.core.gradle.content.Other
-import pt.rafap.kpb.core.gradle.content.OtherPlugin
-import pt.rafap.kpb.core.gradle.content.Plugin
+import pt.rafap.kpb.core.gradle.content.*
 import pt.rafap.kpb.core.mergeModules
 import pt.rafap.kpb.core.module.Module
+import pt.rafap.kpb.core.project.KpbFile
 
 /**
  * Represents a Gradle build file (e.g., build.gradle.kts or settings.gradle.kts).
@@ -24,6 +20,7 @@ data class GradleFile(
     val libs: List<Lib>,
     val modules: List<Module>,
     val others: List<Other>,
+    val repositories: List<String>,
     val versionCatalog: VersionCatalog
 ) {
     init {
@@ -41,6 +38,7 @@ data class GradleFile(
             imports.forEach {
                 appendLine("import $it")
             }
+            appendLine()
             if (plugins.isNotEmpty() || otherPlugins.isNotEmpty()) {
                 appendLine("plugins {")
                 otherPlugins.forEach {
@@ -49,7 +47,16 @@ data class GradleFile(
                 }
                 plugins.forEach {
                     val applyStr = if (it.apply) "" else " apply false"
-                    appendLine("    alias(libs.plugins.${it.name})$applyStr")
+                    val alias = it.name.replace("-", ".")
+                    appendLine("    alias(libs.plugins.$alias)$applyStr")
+                }
+                appendLine("}")
+                appendLine()
+            }
+            if (repositories.isNotEmpty()) {
+                appendLine("repositories {")
+                repositories.forEach {
+                    appendLine("    $it")
                 }
                 appendLine("}")
                 appendLine()
@@ -96,6 +103,7 @@ data class GradleFile(
             libs = (this.libs + other.libs).distinctBy { it.name },
             modules = this.modules.mergeModules(other.modules),
             others = (this.others + other.others).distinct(),
+            repositories = (this.repositories + other.repositories).distinct(),
             versionCatalog = this.versionCatalog + other.versionCatalog
         )
     }
@@ -104,7 +112,6 @@ data class GradleFile(
         /**
          * Helper function to build a GradleFile using the [GradleFileBuildScope] DSL.
          */
-        @Suppress("unused")
         fun buildGradleFile(name: String, func: GradleFileBuildScope.() -> Unit): GradleFile {
             val scope = GradleFileBuildScope(name)
             scope.func()

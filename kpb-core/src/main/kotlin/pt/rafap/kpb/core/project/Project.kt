@@ -2,11 +2,14 @@ package pt.rafap.kpb.core.project
 
 import pt.rafap.kpb.core.gradle.GradleFile
 import pt.rafap.kpb.core.gradle.VersionCatalog
-import pt.rafap.kpb.core.mergeModules
 import pt.rafap.kpb.core.mergeGradleFiles
+import pt.rafap.kpb.core.mergeModules
 import pt.rafap.kpb.core.module.Module
 import pt.rafap.kpb.core.templates.Template
+import pt.rafap.kpb.utils.LogManager
 import java.io.File
+
+private val logger = LogManager.getLogger("Project")
 
 /**
  * Represents a project configuration in the KPB system.
@@ -39,18 +42,42 @@ data class Project(
      */
     fun printStructure(prefix: String = "") {
         println("$prefix- Project: $name")
-        gradleFiles.forEach { gradleFile ->
-            println("$prefix  - Gradle File: ${gradleFile.name}")
+        group?.let {
+            println("$prefix  Group: $it")
         }
-        kpbFiles.forEach { kbpFile ->
-            println("$prefix  - Kbp File: ${kbpFile.path}")
+        println("$prefix  Version Catalog:")
+
+        versionCatalog.libs.forEach {
+            println("$prefix    Lib: ${it.name} -> ${it.id} : ${it.versionRef}")
         }
+
+        versionCatalog.versions.forEach {
+            println("$prefix    Version: ${it.name} -> ${it.version}")
+        }
+
+        versionCatalog.plugins.forEach {
+            println("$prefix    Plugin: ${it.id} -> ${it.versionRef}")
+        }
+
+        println("$prefix  Gradle Files:")
+
+        gradleFiles.forEach {
+            println("$prefix    - ${it.name}")
+        }
+
+        println("$prefix  Modules:")
+
         modules.forEach { module ->
-            println("$prefix  - Module: ${module.name}")
-            module.files.forEach { kbpFile ->
-                println("$prefix    - Kbp File: ${kbpFile.path}")
-            }
+            println("$prefix    - Module: ${module.name}")
+            module.printStructure("$prefix      ")
         }
+
+        println("$prefix  KPB Files:")
+
+        kpbFiles.forEach {
+            println("$prefix    - ${it.path}")
+        }
+
     }
 
     /**
@@ -65,18 +92,20 @@ data class Project(
      */
     fun parseProject(): Project {
         var combinedProject = this
-        val finalTemplate = templates.reduce { a, b -> a + b }
-        combinedProject += finalTemplate
 
-        for (handler in finalTemplate.handlers)
-            combinedProject += handler(combinedProject)
+        if (templates.isNotEmpty()) {
+            val finalTemplate = templates.reduce { a, b -> a + b }
+            combinedProject += finalTemplate
 
+            for (handler in finalTemplate.handlers)
+                combinedProject += handler(combinedProject)
+        }
         var versionCatalog = combinedProject.versionCatalog
         combinedProject.gradleFiles.forEach { gradleFile ->
             versionCatalog += gradleFile.versionCatalog
         }
 
-        combinedProject.modules.map{ module ->
+        combinedProject.modules.map { module ->
             module.gradleFiles.forEach { gradleFile ->
                 versionCatalog += gradleFile.versionCatalog
             }
@@ -94,8 +123,13 @@ data class Project(
      * Creates directories, writes files, and generates the version catalog file.
      * All files are written relative to the current working directory under a folder named [name].
      */
-    fun createProject() {
-        val projectDir = File(name)
+    fun createProject(path: String = "") {
+        val nPath =
+            if (path.isBlank() || path.isEmpty()) name
+            else if (path.endsWith("/")) path.dropLast(1) + name
+            else "$path/$name"
+        logger.info("Creating project structure for '${name}'")
+        val projectDir = File(nPath)
         if (!projectDir.exists()) {
             projectDir.mkdirs()
         }
@@ -107,6 +141,8 @@ data class Project(
 
         // Create Modules
         modules.forEach { module ->
+            val moduleLogger = LogManager.getLogger("Module.${module.name}")
+            moduleLogger.info("Processing module '${module.name}'")
             val moduleDir = File(projectDir, module.name)
             if (!moduleDir.exists()) {
                 moduleDir.mkdirs()
@@ -116,12 +152,14 @@ data class Project(
                     path = "${module.name}/${it.path}",
                     content = it.content
                 )
+                moduleLogger.info("  Added file: ${it.path}")
             }
             module.gradleFiles.forEach {
                 kpbFiles += KpbFile(
                     path = "${module.name}/${it.name}",
                     content = it.toKbpFile().content
                 )
+                moduleLogger.info("  Added gradle file: ${it.name}")
             }
         }
 
@@ -130,8 +168,10 @@ data class Project(
 
         // Write all files
         kpbFiles.forEach {
-            KpbFile("$name/${it.path}", it.content).create()
+            KpbFile("$nPath/${it.path}", it.content).create()
+            logger.info("Created file: ${it.path}")
         }
+        logger.info("Project creation complete.")
     }
 
 
@@ -142,7 +182,6 @@ data class Project(
      * The group ID is taken from this project if present, otherwise from the other project.
      */
     operator fun plus(other: Project): Project {
-        println("${this.name} + ${other.name}")
         return Project(
             name = this.name,
             group = this.group ?: other.group,
@@ -151,6 +190,42 @@ data class Project(
             kpbFiles = (this.kpbFiles + other.kpbFiles).distinct(),
             gradleFiles = this.gradleFiles.mergeGradleFiles(other.gradleFiles),
             templates = this.templates + other.templates
+        )
+    }
+
+    operator fun plus(other: KpbFile): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog,
+            modules = this.modules,
+            kpbFiles = (this.kpbFiles + other).distinct(),
+            gradleFiles = this.gradleFiles,
+            templates = this.templates
+        )
+    }
+
+    operator fun plus(other: Module): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog + other.versionCatalog,
+            modules = this.modules.mergeModules(listOf(other)),
+            kpbFiles = this.kpbFiles,
+            gradleFiles = this.gradleFiles,
+            templates = this.templates
+        )
+    }
+
+    operator fun plus(other: VersionCatalog): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog + other,
+            modules = this.modules,
+            kpbFiles = this.kpbFiles,
+            gradleFiles = this.gradleFiles,
+            templates = this.templates
         )
     }
 
@@ -170,6 +245,107 @@ data class Project(
             gradleFiles = this.gradleFiles.mergeGradleFiles(other.gradleFiles),
             templates = this.templates + other
         )
+    }
+
+    operator fun plus(other: GradleFile): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog + other.versionCatalog,
+            modules = this.modules,
+            kpbFiles = (this.kpbFiles + other.toKbpFile()).distinct(),
+            gradleFiles = this.gradleFiles.mergeGradleFiles(listOf(other)),
+            templates = this.templates
+        )
+    }
+
+    operator fun plus(other: List<Any>): Project {
+        var result = this
+        for (item in other) {
+            when (item) {
+                is Module -> result += item
+                is KpbFile -> result += item
+                is VersionCatalog -> result += item
+                is Template -> result += item
+                is GradleFile -> result += item
+                else -> throw IllegalArgumentException("Unsupported type in project addition: ${item::class}")
+            }
+        }
+        return result
+    }
+
+    operator fun minus(other: Project): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog - other.versionCatalog,
+            modules = this.modules.filterNot { mod -> other.modules.any { it.name == mod.name } },
+            kpbFiles = this.kpbFiles.filterNot { file -> other.kpbFiles.any { it.path == file.path } },
+            gradleFiles = this.gradleFiles.filterNot { gf -> other.gradleFiles.any { it.name == gf.name } },
+            templates = this.templates.filterNot { tpl -> other.templates.any { it == tpl } }
+        )
+    }
+
+    operator fun minus(other: Module): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog - other.versionCatalog,
+            modules = this.modules.filterNot { it.name == other.name },
+            kpbFiles = this.kpbFiles,
+            gradleFiles = this.gradleFiles,
+            templates = this.templates
+        )
+    }
+
+    operator fun minus(other: VersionCatalog): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog - other,
+            modules = this.modules,
+            kpbFiles = this.kpbFiles,
+            gradleFiles = this.gradleFiles,
+            templates = this.templates
+        )
+    }
+
+    operator fun minus(other: KpbFile): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog,
+            modules = this.modules,
+            kpbFiles = this.kpbFiles.filterNot { it.path == other.path },
+            gradleFiles = this.gradleFiles,
+            templates = this.templates
+        )
+    }
+
+    operator fun minus(other: GradleFile): Project {
+        return Project(
+            name = this.name,
+            group = this.group,
+            versionCatalog = this.versionCatalog - other.versionCatalog,
+            modules = this.modules,
+            kpbFiles = this.kpbFiles.filterNot { it.path == other.toKbpFile().path },
+            gradleFiles = this.gradleFiles.filterNot { it.name == other.name },
+            templates = this.templates
+        )
+    }
+
+    operator fun minus(other: List<Any>): Project {
+        var result = this
+        for (item in other) {
+            when (item) {
+                is Module -> result -= item
+                is KpbFile -> result -= item
+                is VersionCatalog -> result -= item
+                is GradleFile -> result -= item
+                else -> throw IllegalArgumentException("Unsupported type in project subtraction: ${item::class}")
+            }
+        }
+        return result
     }
 
     companion object {

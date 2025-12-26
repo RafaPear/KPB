@@ -61,6 +61,13 @@ interface BuilderScope {
     fun moduleProject(module: Module)
 
     /**
+     * Removes a module from the project by its name.
+     *
+     * @param moduleName The name of the module to remove.
+     */
+    fun removeModule(moduleName: String)
+
+    /**
      * Applies a template to the project.
      *
      * @param template A function that creates a template from the current project.

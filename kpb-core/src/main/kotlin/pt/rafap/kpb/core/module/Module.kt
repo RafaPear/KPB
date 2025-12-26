@@ -36,6 +36,22 @@ data class Module(
         return module
     }
 
+    fun printStructure(indent: String = "") {
+        println("${indent}Module: $name (Group: $group)")
+        if (files.isNotEmpty()) {
+            println("$indent  Files:")
+            for (file in files) {
+                println("$indent    - ${file.path}")
+            }
+        }
+        if (gradleFiles.isNotEmpty()) {
+            println("$indent  Gradle Files:")
+            for (gradleFile in gradleFiles) {
+                println("$indent    - ${gradleFile.name}")
+            }
+        }
+    }
+
     companion object {
         /**
          * Helper function to build a [Module] using the [ModuleBuildScope] DSL.
@@ -46,7 +62,12 @@ data class Module(
          * @param func The configuration block.
          * @return The built [Module] instance.
          */
-        fun buildModule(name: String, simpleName: String, group: String? = null, func: ModuleBuildScope.() -> Unit): Module {
+        fun buildModule(
+            name: String,
+            simpleName: String,
+            group: String? = null,
+            func: ModuleBuildScope.() -> Unit
+        ): Module {
             val newGroup = if (group == null) simpleName else "$group.$simpleName"
             val scope = ModuleBuildScope(name, simpleName, newGroup)
             scope.func()

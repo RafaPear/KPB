@@ -5,7 +5,6 @@ composeMultiplatform = "1.9.1"
 kotlin = "2.2.20"
 dokka = "2.1.0"
 shadow = "8.1.1"
-okio = "3.16.2"
 ktflag = "1.5.4"
 coroutines = "1.10.2"
 
@@ -13,7 +12,6 @@ coroutines = "1.10.2"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 ktflag = { module = "com.github.RafaPear:KtFlag", version.ref = "ktflag" }
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 

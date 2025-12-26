@@ -1,9 +1,9 @@
 package pt.rafap.kpb.core.module
 
 import pt.rafap.kpb.core.gradle.GradleFile
-import pt.rafap.kpb.core.project.KpbFile
 import pt.rafap.kpb.core.gradle.GradleFileBuildScope
 import pt.rafap.kpb.core.gradle.VersionCatalog
+import pt.rafap.kpb.core.project.KpbFile
 
 class ModuleBuildScope(val name: String, val simpleName: String, val group: String?) : BuilderScope {
     private val files = mutableListOf<KpbFile>()
@@ -16,6 +16,13 @@ class ModuleBuildScope(val name: String, val simpleName: String, val group: Stri
     }
 
     private fun buildSrcPath(srcName: String, path: String): String {
+        // Preserve absolute or already-qualified paths (supports forward and Windows-style separators)
+        val looksAbsolute = path.startsWith("/") ||
+                path.startsWith("\\\\") ||
+                Regex("^[A-Za-z]:/.*").matches(path)
+        val alreadySrcRooted = path.startsWith("src/") || path.startsWith("src\\")
+        if (looksAbsolute || alreadySrcRooted) return path
+
         val str = if (groupPath == null) "src/$srcName/$path"
         else "src/$srcName/kotlin/${groupPath}/$path"
         return str

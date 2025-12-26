@@ -2,8 +2,6 @@ package pt.rafap.kpb.core
 
 import pt.rafap.kpb.core.gradle.GradleFile
 import pt.rafap.kpb.core.module.Module
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 /**
  * Merges a list of modules with another list, combining modules with the same name.

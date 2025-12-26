@@ -21,9 +21,7 @@ class KpbFile(
         val file = File(path)
         file.parentFile?.mkdirs()
         file.writeBytes(
-            content?.toByteArray() ?:
-            this.file?.readBytes() ?:
-            ByteArray(0)
+            content?.toByteArray() ?: this.file?.readBytes() ?: ByteArray(0)
         )
     }
 }

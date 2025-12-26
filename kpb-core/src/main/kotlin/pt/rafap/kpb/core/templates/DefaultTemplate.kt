@@ -52,6 +52,10 @@ fun Project.createDefaultTemplate(version: String): Template = this.buildTemplat
         plugin("kotlin", "org.jetbrains.kotlin.jvm", apply = false) {
             Version("kotlin", "2.2.20")
         }
+
+        repository("gradlePluginPortal()")
+        repository("mavenCentral()")
+
         other {
             val sb = StringBuilder()
             if (group != null) {

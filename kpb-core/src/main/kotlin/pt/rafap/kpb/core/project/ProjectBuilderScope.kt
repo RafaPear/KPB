@@ -13,7 +13,7 @@ import pt.rafap.kpb.core.templates.Template
  * Allows configuring project properties like group ID, adding modules, files,
  * Gradle files, and applying templates.
  */
-class ProjectBuilderScope(val name: String): BuilderScope {
+class ProjectBuilderScope(val name: String) : BuilderScope {
     private val kpbFiles = mutableListOf<KpbFile>()
     private var group: String? = null
     private val modules = mutableListOf<Module>()
@@ -85,6 +85,13 @@ class ProjectBuilderScope(val name: String): BuilderScope {
         val module = scope.build()
         moduleProject(module)
         return module
+    }
+
+    /**
+     * Removes a module from the project by its name.
+     */
+    override fun removeModule(moduleName: String) {
+        modules.removeIf { it.name == moduleName }
     }
 
     /**

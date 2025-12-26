@@ -6,6 +6,7 @@ App entry point that wires the core components for an interactive experience.
 Application entry and wiring.
 
 ## Usage
+
 Build and run:
 
 ```sh

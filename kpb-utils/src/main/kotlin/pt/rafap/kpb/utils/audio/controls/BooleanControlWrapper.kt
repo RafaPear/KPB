@@ -12,6 +12,7 @@ import javax.sound.sampled.Clip
  * @throws IllegalArgumentException if the specified control type is not supported by the Clip.
  * @throws ClassCastException if the control retrieved is not a BooleanControl.
  */
+@Suppress("unused")
 abstract class BooleanControlWrapper(clip: Clip, controlType: BooleanControl.Type) {
     private val control: BooleanControl = clip.getControl(controlType) as BooleanControl
     private val defaultValue: Boolean = control.value
