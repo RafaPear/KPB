@@ -1,1 +1,1 @@
-sourceset_dependencies = '{":kpb-utils/main":[],":kpb-cli/main":[],":kpb-core/main":[],":kpb-storage/main":[],":kpb-app/main":[]}'
+sourceset_dependencies = '{":kpb-utils/main":[],":kpb-cli/main":[],":kpb-core/main":[],":kpb-app/main":[]}'
