@@ -41,6 +41,8 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = rootProject.name
             packageVersion = rootProject.version.toString()
+            includeAllModules = true
+
             macOS {
                 dockName = "kpb App"
                 iconFile.set(project.file("src/main/composeResources/drawable/kpb.png"))
@@ -61,6 +63,8 @@ tasks.register<Jar>("fatJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     from(sourceSets.main.get().output)
+
+    from(sourceSets.main.get().resources)
 
     dependsOn(configurations.runtimeClasspath)
     from({

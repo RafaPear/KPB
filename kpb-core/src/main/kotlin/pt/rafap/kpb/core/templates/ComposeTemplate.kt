@@ -145,6 +145,8 @@ fun GradleFileBuildScope.createModuleBuildGradleComposeApp(module: Module) {
                                         targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
                                         packageName = rootProject.name
                                         packageVersion = rootProject.version.toString()
+                                        includeAllModules = true
+                                        
                                         macOS {
                                             dockName = rootProject.name
                                             iconFile.set(project.file("src/main/composeResources/drawable/icon.png"))

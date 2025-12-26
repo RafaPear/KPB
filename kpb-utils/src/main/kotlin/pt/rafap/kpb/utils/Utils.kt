@@ -10,8 +10,20 @@ import java.io.File
  * @throws java.net.URISyntaxException if the resource URI is invalid.
  */
 fun loadResource(path: String): File {
-    val classloader = Thread.currentThread().getContextClassLoader()
-    val resource = classloader.getResource(path)
+    val input = Thread.currentThread()
+        .contextClassLoader
+        .getResourceAsStream(path)
         ?: throw IllegalArgumentException("Resource '$path' not found")
-    return File(resource.toURI())
+
+    val temp = kotlin.io.path.createTempFile(
+        prefix = "kpb-resource-",
+        suffix = "-" + path.substringAfterLast('/')
+    ).toFile()
+
+    temp.outputStream().use { out ->
+        input.copyTo(out)
+    }
+
+    temp.deleteOnExit()
+    return temp
 }

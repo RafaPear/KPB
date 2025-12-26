@@ -81,6 +81,9 @@ private fun createBuildGradleApp(module: Module): String {
     
         // Inclui classes do projeto
         from(sourceSets.main.get().output)
+        
+        // Inclui recursos do projeto
+        from(sourceSets.main.get().resources)
     
         // Inclui dependências (todas as libs do classpath)
         dependsOn(configurations.runtimeClasspath)
